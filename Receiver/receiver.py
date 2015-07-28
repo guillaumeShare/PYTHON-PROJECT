@@ -24,11 +24,6 @@ def main():
     An example where data is received, decoded, and finally written to a file.
     """
     parser = argparse.ArgumentParser(description=main.__doc__)
-    parser.add_argument(
-        '--output-file',
-        type=str,
-        help='Path to the file which should be received.',
-        default='output_file')
 
     parser.add_argument(
         '--ip',
@@ -68,6 +63,10 @@ def main():
     symbol_size = int(sock.recv(100))
     print symbol_size
 
+    # Get the filename from the sender
+    file_name = sock.recv(100)
+    print file_name
+
     # In the following we will make an decoder factory.
     # The factories are used to build actual decoder
     decoder_factory = kodo.FullVectorDecoderFactoryBinary(
@@ -89,7 +88,7 @@ def main():
         print("Decoder rank: {}/{}".format(decoder.rank(), decoder.symbols()))
 
     # Write the decoded data to the output file
-    f = open(args.output_file, 'wb')
+    f = open(file_name, 'wb')
     f.write(decoder.copy_symbols())
     f.close()
 
