@@ -58,6 +58,10 @@ def main():
     symbol_size = 65000
     symbols = (size_file // symbol_size) + 1
     print symbols
+    label = "Received_" + args.file_path
+
+    print label
+
 
 
 
@@ -87,8 +91,11 @@ def main():
 
     address = (args.ip, args.port)
 
+    # Send the number of symbols to the receiver
     sock.sendto(str(symbols), address)
     sock.sendto(str(symbol_size) , address)
+    # Send the file name to the receiver
+    sock.sendto(label , address)
 
     print("Processing")
     while True and not args.dry_run:
@@ -104,4 +111,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
