@@ -58,18 +58,21 @@ def main():
     # Set the number of symbols (i.e. the generation size in RLNC
     # terminology) and the size of a symbol in bytes
 
+    # Open Wave and get the sample rate
+    f= open(args.file_path, 'rb' )
+    music = wave.open(args.file_path, 'rb')
+    sampleRate = music.getframerate()
+    print "SampleRate " + str(sampleRate)
+
     size_file = os.path.getsize(args.file_path)
     print size_file
-    symbol_size = 8100
+    symbol_size = sampleRate
     symbols = (size_file // symbol_size) + 1
     print symbols
     label = "Received_" + args.file_path
     print label
 
-    f= open(args.file_path, 'rb' )
-    music = wave.open(args.file_path, 'rb')
-    sampleRate = music.getframerate()
-    print "SampleRate " + str(sampleRate)
+
 
     # In the following we will make an encoder factory.
     # The factories are used to build actual encoder
