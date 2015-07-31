@@ -109,7 +109,7 @@ def main():
     sock.sendto(str(sampleRate) , address)
     print("Processing")
     while True and not args.dry_run:
-        time.sleep(0.5)
+        time.sleep(0.245)
         # Generate an encoded packet
         packet = encoder.write_payload()
         print("Packet encoded!")
