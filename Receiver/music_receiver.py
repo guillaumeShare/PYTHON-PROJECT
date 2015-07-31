@@ -19,9 +19,21 @@ import pymedia
 import pymedia.audio.sound as sound
 import wave
 
+import threading
+
+
 MCAST_GRP = '224.1.1.1'
 MCAST_PORT = 5007
 
+##def get_music(decoder, i, sr):
+##    global music_buffer
+##    music_buffer = ''
+##    j = i
+##    while True:
+##        music_buffer += decoder.copy_symbols()[(j)*(sr):(j+1)*sr]
+##        j += 1
+    
+    
 
 def main():
     """
@@ -82,7 +94,7 @@ def main():
     decoder = decoder_factory.build()
 
     print "SampleRate {}".format(sampleRate)
-    snd1= sound.Output(sampleRate, 1, sound.AFMT_S16_LE )
+    snd1= sound.Output(sampleRate, 2, sound.AFMT_S16_LE )
 
     rating = int(sampleRate*1.02)
     if args.dry_run:
@@ -90,18 +102,26 @@ def main():
 
     print("Processing...")
     i = 0
+
+    #t = threading.Thread(target=get_music, args=(decoder, i, sampleRate, ))
+    
     while not decoder.is_complete():
-        time.sleep(0.2)
+        time.sleep(0.1)
         packet = sock.recv(rating)
 
         decoder.read_payload(packet)
-        snd1.play(decoder.copy_symbols()[i*rating:i*rating + rating])
+        #music_buffer += decoder.copy_symbols()[(i)*(sampleRate):(i+1)*sampleRate]      
+##          if i == 0:
+##                    t.start()
+##                
+        if i >= 10:
+            snd1.play(decoder.copy_symbols()[(i-10)*(rating):(i-10)*rating + rating])
         #print len(decoder.copy_symbols())
         #snd1.play(decoder.copy_symbols())
-       #while snd1.isPlaying():
-            # time.sleep(0.05)
+        #while snd1.isPlaying():
+            #time.sleep(0.05)
 
-        print("Packet received!")
+        #print("Packet received!")
         print("Decoder rank: {}/{}".format(decoder.rank(), decoder.symbols()))
         i += 1
 
@@ -109,6 +129,7 @@ def main():
     f = open(file_name, 'wb')
     f.write(decoder.copy_symbols())
     f.close()
+    #music_buffer.close()
     print("Processing finished.")
 
 if __name__ == "__main__":
