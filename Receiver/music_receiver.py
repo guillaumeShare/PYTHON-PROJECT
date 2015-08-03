@@ -22,7 +22,7 @@ import wave
 import threading
 
 
-MCAST_GRP = '224.1.1.1'
+MCAST_GRP = '224.2.2.2'
 MCAST_PORT = 5007
 
 ##def get_music(decoder, i, sr):
@@ -85,16 +85,18 @@ def main():
     file_name = sock.recv(100)
     print file_name
     sampleRate = int(sock.recv(100))
+    channels = int(sock.recv(100))
+    print channels
     # In the following we will make an decoder factory.
     # The factories are used to build actual decoder
-    decoder_factory = kodo.FullVectorDecoderFactoryBinary(
+    decoder_factory = kodo.FullVectorDecoderFactoryBinary16(
         max_symbols=symbols,
         max_symbol_size=symbol_size)
 
     decoder = decoder_factory.build()
 
     print "SampleRate {}".format(sampleRate)
-    snd1= sound.Output(sampleRate, 2, sound.AFMT_S16_LE )
+    snd1= sound.Output(sampleRate, channels, sound.AFMT_S16_LE )
 
     rating = int(sampleRate*1.02)
     if args.dry_run:
@@ -106,7 +108,7 @@ def main():
     #t = threading.Thread(target=get_music, args=(decoder, i, sampleRate, ))
     
     while not decoder.is_complete():
-        time.sleep(0.1)
+        time.sleep(0.1375)
         packet = sock.recv(rating)
 
         decoder.read_payload(packet)
