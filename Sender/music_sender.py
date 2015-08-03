@@ -18,7 +18,7 @@ import pymedia
 import pymedia.audio.sound as sound
 import wave
 
-MCAST_GRP = '224.1.1.1'
+MCAST_GRP = '224.2.2.2'
 MCAST_PORT = 5007
 
 
@@ -62,6 +62,7 @@ def main():
     f= open(args.file_path, 'rb' )
     music = wave.open(args.file_path, 'rb')
     sampleRate = music.getframerate()
+    channels = music.getnchannels()
     print "SampleRate " + str(sampleRate)
 
     size_file = os.path.getsize(args.file_path)
@@ -76,7 +77,7 @@ def main():
 
     # In the following we will make an encoder factory.
     # The factories are used to build actual encoder
-    encoder_factory = kodo.FullVectorEncoderFactoryBinary(
+    encoder_factory = kodo.FullVectorEncoderFactoryBinary16(
         max_symbols=symbols,
         max_symbol_size=symbol_size)
 
@@ -107,9 +108,10 @@ def main():
     sock.sendto(args.file_path , address)
 
     sock.sendto(str(sampleRate) , address)
+    sock.sendto(str(channels), address)
     print("Processing")
     while True and not args.dry_run:
-        time.sleep(0.245)
+        time.sleep(0.490 / channels)
         # Generate an encoded packet
         packet = encoder.write_payload()
         print("Packet encoded!")
