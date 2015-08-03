@@ -21,7 +21,6 @@ import wave
 
 import threading
 
-
 MCAST_GRP = '224.2.2.2'
 MCAST_PORT = 5007
 
@@ -106,16 +105,22 @@ def main():
     i = 0
 
     #t = threading.Thread(target=get_music, args=(decoder, i, sampleRate, ))
-    
+    compt_Rank = 0
     while not decoder.is_complete():
-        time.sleep(0.1375)
+        time.sleep(0.1)
         packet = sock.recv(rating)
 
         decoder.read_payload(packet)
         #music_buffer += decoder.copy_symbols()[(i)*(sampleRate):(i+1)*sampleRate]      
 ##          if i == 0:
 ##                    t.start()
-##                
+        if i < 1:
+            previous_Rank = decoder.rank()
+        if i > 0:
+            if decoder.rank() == previous_Rank:
+                compt_Rank += 1
+        previous_Rank = decoder.rank()
+            
         if i >= 10:
             snd1.play(decoder.copy_symbols()[(i-10)*(rating):(i-10)*rating + rating])
         #print len(decoder.copy_symbols())
@@ -133,6 +138,7 @@ def main():
     f.close()
     #music_buffer.close()
     print("Processing finished.")
+    print ("Packet loss = {}".format(compt_Rank))
 
 if __name__ == "__main__":
     main()
